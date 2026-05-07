@@ -1,5 +1,5 @@
 import os
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 
@@ -7,11 +7,12 @@ from pydantic import BaseModel, Field
 # os.environ["OPENAI_API_KEY"] = "..." 
 
 # Initialize the LLMs
-def get_llm(temperature=0.7):
-    return ChatOpenAI(model="gpt-4o", temperature=temperature)
+def get_groq_llm(model: str, api_key: str, temperature=0.7):
+    return ChatGroq(model_name=model, groq_api_key=api_key, temperature=temperature)
 
-def get_cheap_llm(temperature=0.1):
-    return ChatOpenAI(model="gpt-4o-mini", temperature=temperature)
+def get_cheap_llm(api_key: str, temperature=0.1):
+    # Using the smaller, faster Llama 3.1 8B for background tasks
+    return ChatGroq(model_name="llama-3.1-8b-instant", groq_api_key=api_key, temperature=temperature)
 
 # --- Prompts ---
 
@@ -55,7 +56,8 @@ Format your output as a professional Executive Summary with Action Items.
 
 class Analyst:
     def __init__(self):
-        self.llm = get_llm(temperature=0.2)
+        # Bot A -> llama-3.3-70b-versatile using KEY 1
+        self.llm = get_groq_llm(model="llama-3.3-70b-versatile", api_key=os.environ.get("GROQ_API_KEY_1"), temperature=0.2)
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", ANALYST_SYSTEM_PROMPT),
             ("user", "Context: {context}\n\nLatest Turn: {latest_message}\n\nProvide your analysis.")
@@ -67,7 +69,8 @@ class Analyst:
 
 class Visionary:
     def __init__(self):
-        self.llm = get_llm(temperature=0.9)
+        # Bot B -> llama-3.1-8b-instant using KEY 2
+        self.llm = get_groq_llm(model="llama-3.1-8b-instant", api_key=os.environ.get("GROQ_API_KEY_2"), temperature=0.9)
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", VISIONARY_SYSTEM_PROMPT),
             ("user", "Context: {context}\n\nLatest Turn: {latest_message}\n\nProvide your vision.")
@@ -79,7 +82,8 @@ class Visionary:
 
 class FactChecker:
     def __init__(self):
-        self.llm = get_cheap_llm()
+        # Background task using KEY 1
+        self.llm = get_cheap_llm(api_key=os.environ.get("GROQ_API_KEY_1"))
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", FACT_CHECKER_PROMPT),
             ("user", "Evaluate this claim: {latest_message}")
@@ -91,7 +95,8 @@ class FactChecker:
 
 class Synthesizer:
     def __init__(self):
-        self.llm = get_llm(temperature=0.1)
+        # Use Llama 3.3 70B for the complex synthesis task, using KEY 2
+        self.llm = get_groq_llm(model="llama-3.3-70b-versatile", api_key=os.environ.get("GROQ_API_KEY_2"), temperature=0.1)
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", SYNTHESIZER_PROMPT),
             ("user", "Synthesize the dialogue.")

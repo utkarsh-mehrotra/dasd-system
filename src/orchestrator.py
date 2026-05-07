@@ -1,3 +1,7 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from typing import TypedDict, Annotated, Sequence
 import operator
 from langgraph.graph import StateGraph, END
@@ -78,11 +82,13 @@ class DASDOrchestrator:
     def analyst_node(self, state: AgentState):
         ctx = self.context_manager.get_context()
         response = self.analyst.invoke({"context": ctx, "latest_message": state["latest_message"], "global_goal": state["global_goal"]})
+        import time; time.sleep(2) # Throttle to prevent Groq 6k TPM limit
         return {"latest_message": response, "sender": "analyst", "turn_count": state["turn_count"] + 1, "history": [response]}
 
     def visionary_node(self, state: AgentState):
         ctx = self.context_manager.get_context()
         response = self.visionary.invoke({"context": ctx, "latest_message": state["latest_message"], "global_goal": state["global_goal"]})
+        import time; time.sleep(2) # Throttle to prevent Groq 6k TPM limit
         return {"latest_message": response, "sender": "visionary", "turn_count": state["turn_count"] + 1, "history": [response]}
         
     def fact_check_node(self, state: AgentState):
@@ -136,8 +142,8 @@ if __name__ == "__main__":
         "history": []
     }
     
-    print("Starting loop (Make sure OPENAI_API_KEY is set in environment)...\n")
+    print("Starting loop (Make sure GROQ_API_KEY is set in environment)...\n")
     # For local execution, uncomment the following line once API keys are present.
-    # final_state = orchestrator.graph.invoke(initial_state)
-    # print("\n=== FINAL SYNTHESIS ===")
-    # print(final_state["latest_message"])
+    final_state = orchestrator.graph.invoke(initial_state, {"recursion_limit": 100})
+    print("\n=== FINAL SYNTHESIS ===")
+    print(final_state["latest_message"])

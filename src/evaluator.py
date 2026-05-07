@@ -1,9 +1,10 @@
 import numpy as np
-from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 class Evaluator:
     def __init__(self):
-        self.embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
+        # Using a fast, local embedding model
+        self.embeddings_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         self.stagnation_threshold = 0.95  # High similarity means stagnation
 
     def calculate_embedding(self, text: str) -> np.ndarray:

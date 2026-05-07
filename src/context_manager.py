@@ -1,5 +1,5 @@
 from typing import List, Dict
-from langchain_openai import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
 class ContextManager:
@@ -9,7 +9,8 @@ class ContextManager:
         self.sliding_window: List[Dict[str, str]] = []
         self.max_window_size = 3
         
-        self.summarizer_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1)
+        import os
+        self.summarizer_llm = ChatGroq(model_name="llama-3.1-8b-instant", groq_api_key=os.environ.get("GROQ_API_KEY_1"), temperature=0.1)
         self.summarize_prompt = ChatPromptTemplate.from_messages([
             ("system", "You are the Summarizer. Condense the following dialogue history into a concise 'State of the Conversation'. Retain key technical points, agreements, and open disagreements. Old Summary: {old_summary}"),
             ("user", "New Dialogue to integrate: {dialogue}")
