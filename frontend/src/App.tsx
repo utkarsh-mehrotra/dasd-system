@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import './index.css';
 
@@ -77,7 +77,7 @@ function App() {
         setMessages(prev => [...prev, payload]);
       });
 
-      eventSource.addEventListener("done", (e) => {
+      eventSource.addEventListener("done", () => {
         setStatus("idle");
         eventSource.close();
       });
