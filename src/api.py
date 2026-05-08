@@ -11,6 +11,8 @@ load_dotenv()
 
 from src.orchestrator import DASDOrchestrator
 
+STORAGE_DIR = os.getenv("STORAGE_DIR", os.path.join("assets", "transcripts"))
+
 app = FastAPI(title="DASD API")
 
 # Allow frontend to communicate with backend
@@ -89,7 +91,7 @@ async def event_generator():
         # Save transcript at the end
         import time
         filename = f"session_{int(time.time())}.md"
-        filepath = os.path.join("assets", "transcripts", filename)
+        filepath = os.path.join(STORAGE_DIR, filename)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         
         with open(filepath, "w") as f:
@@ -113,15 +115,14 @@ async def stream_conversation(request: Request):
 
 @app.get("/history")
 async def get_history():
-    history_dir = os.path.join("assets", "transcripts")
-    os.makedirs(history_dir, exist_ok=True)
-    files = [f for f in os.listdir(history_dir) if f.endswith(".md")]
+    os.makedirs(STORAGE_DIR, exist_ok=True)
+    files = [f for f in os.listdir(STORAGE_DIR) if f.endswith(".md")]
     files.sort(reverse=True)
     return {"transcripts": files}
 
 @app.get("/history/{filename}")
 async def get_transcript(filename: str):
-    filepath = os.path.join("assets", "transcripts", filename)
+    filepath = os.path.join(STORAGE_DIR, filename)
     if not os.path.exists(filepath):
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Transcript not found")
