@@ -90,7 +90,16 @@ async def event_generator():
                 
         # Save transcript at the end
         import time
-        filename = f"session_{int(time.time())}.md"
+        import re
+        
+        # Create a summarized slug from the global goal (first 5 words, alphanumeric only)
+        goal_snippet = current_initial_state['global_goal']
+        words = re.sub(r'[^a-zA-Z0-9\s]', '', goal_snippet).split()[:5]
+        slug = "_".join(word.lower() for word in words)
+        if not slug:
+            slug = "session"
+            
+        filename = f"{slug}_{int(time.time())}.md"
         filepath = os.path.join(STORAGE_DIR, filename)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         
