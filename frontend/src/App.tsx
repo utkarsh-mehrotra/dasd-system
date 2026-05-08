@@ -104,7 +104,7 @@ function App() {
   return (
     <div className="app-container">
       <div className="sidebar">
-        <div className="brand">DASD Engine</div>
+        <div className="brand">Dual-Agent Synthetic Dialogue (DASD)</div>
         
         <div className="tabs" style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1rem' }}>
           <button 
