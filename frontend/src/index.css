@@ -237,3 +237,50 @@ textarea:focus, select:focus {
 
 .pulse.error { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
 .pulse.idle { background: var(--text-secondary); animation: none; box-shadow: none; }
+
+/* Responsive Mobile Layout */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 45vh;
+    overflow-y: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 1.25rem;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .brand {
+    font-size: 1.25rem;
+  }
+
+  .tabs {
+    padding-bottom: 0.5rem;
+  }
+
+  .arena {
+    padding: 1rem;
+  }
+
+  .message-card {
+    max-width: 95%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .message-card.synthesizer {
+    max-width: 100%;
+  }
+  
+  .message-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
