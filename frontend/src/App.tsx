@@ -106,15 +106,15 @@ function App() {
       <div className="sidebar">
         <div className="brand">Dual-Agent Synthetic Dialogue (DASD)</div>
         
-        <div className="tabs" style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1rem' }}>
+        <div className="tabs">
           <button 
-            style={{ flex: 1, padding: '0.5rem', background: activeTab === 'live' ? 'var(--bg-glass)' : 'transparent', border: '1px solid var(--border-subtle)', color: '#fff', borderRadius: '4px', cursor: 'pointer' }}
+            className={activeTab === 'live' ? 'active' : ''}
             onClick={() => setActiveTab("live")}
           >
             Live Arena
           </button>
           <button 
-            style={{ flex: 1, padding: '0.5rem', background: activeTab === 'history' ? 'var(--bg-glass)' : 'transparent', border: '1px solid var(--border-subtle)', color: '#fff', borderRadius: '4px', cursor: 'pointer' }}
+            className={activeTab === 'history' ? 'active' : ''}
             onClick={() => { setActiveTab("history"); fetchHistoryList(); }}
           >
             History
@@ -160,13 +160,13 @@ function App() {
             </div>
           </>
         ) : (
-          <div className="history-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto' }}>
+          <div className="history-list">
             <label>Past Transcripts</label>
             {historyList.length === 0 && <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No transcripts found.</div>}
             {historyList.map((file, idx) => (
               <div 
                 key={idx} 
-                style={{ padding: '1rem', background: 'var(--bg-glass)', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', border: '1px solid var(--border-subtle)' }}
+                className="history-item"
                 onClick={() => loadTranscript(file)}
               >
                 {file}
@@ -179,35 +179,54 @@ function App() {
       <div className="arena" ref={arenaRef}>
         {activeTab === "live" ? (
           <>
-            {messages.length === 0 && status === "idle" && (
-              <div style={{ margin: "auto", color: "var(--text-secondary)", textAlign: "center" }}>
-                <h2>Awaiting Sequence</h2>
-                <p style={{ marginTop: "1rem" }}>Initialize the loop to begin multi-agent synthesis.</p>
-              </div>
-            )}
+            <div className="arena-header">
+              <h1>Active Synthesis</h1>
+              <p>Monitoring LangGraph execution pipeline.</p>
+            </div>
             
-            {messages.map((m, idx) => (
-              <div key={idx} className={`message-card ${m.sender}`}>
-                <div className="message-header">
-                  <span className="sender-badge">{m.sender}</span>
-                  <span className="turn-badge">Turn {m.turn}</span>
+            <div className="arena-content">
+              {messages.length === 0 && status === "idle" && (
+                <div style={{ margin: "5rem auto", color: "var(--text-secondary)", textAlign: "center" }}>
+                  <h2>Awaiting Sequence</h2>
+                  <p style={{ marginTop: "1rem" }}>Initialize the loop to begin multi-agent synthesis.</p>
                 </div>
-                <div className="message-body">{m.message}</div>
-              </div>
-            ))}
+              )}
+              
+              {messages.map((m, idx) => (
+                <div key={idx} className={`message-card ${m.sender}`}>
+                  <div className="message-header">
+                    <div className="sender-info">
+                      <div className="sender-avatar">{m.sender.charAt(0).toUpperCase()}</div>
+                      <span className="sender-name">{m.sender}</span>
+                    </div>
+                    <span className="turn-badge">Turn {m.turn}</span>
+                  </div>
+                  <div className="message-body">{m.message}</div>
+                </div>
+              ))}
+            </div>
           </>
         ) : (
-          <div style={{ padding: '2rem', background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border-subtle)' }}>
-            {selectedTranscript ? (
-              <div className="markdown-body" style={{ color: '#e2e8f0' }}>
-                <ReactMarkdown>{selectedTranscript}</ReactMarkdown>
+          <>
+            <div className="arena-header">
+              <h1>Transcript Archive</h1>
+              <p>Viewing historical agent synthesis.</p>
+            </div>
+            
+            <div className="arena-content">
+              <div style={{ padding: '2rem', background: 'var(--bg-card)', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+                {selectedTranscript ? (
+                  <div className="markdown-body" style={{ color: '#EAEAEA' }}>
+                    <ReactMarkdown>{selectedTranscript}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <div style={{ color: "var(--text-secondary)", textAlign: "center", marginTop: '5rem' }}>
+                    Select a transcript from the sidebar to view history.
+                  </div>
+                )}
               </div>
-            ) : (
-              <div style={{ color: "var(--text-secondary)", textAlign: "center", marginTop: '5rem' }}>
-                Select a transcript from the sidebar to view history.
-              </div>
-            )}
-          </div>
+            </div>
+          </>
         )}
       </div>
     </div>
