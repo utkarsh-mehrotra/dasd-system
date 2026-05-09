@@ -234,6 +234,25 @@ textarea:focus, select:focus {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   transition: background 0.2s;
+  max-width: 85%;
+}
+
+.message-card.analyst {
+  margin-right: auto;
+  background: #111111;
+  border-top-left-radius: 2px;
+}
+
+.message-card.visionary {
+  margin-left: auto;
+  background: #161616;
+  border-top-right-radius: 2px;
+}
+
+.message-card.synthesizer {
+  max-width: 100%;
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .message-card:hover {
@@ -247,10 +266,18 @@ textarea:focus, select:focus {
   margin-bottom: 1rem;
 }
 
+.message-card.visionary .message-header {
+  flex-direction: row-reverse;
+}
+
 .sender-info {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.message-card.visionary .sender-info {
+  flex-direction: row-reverse;
 }
 
 .sender-avatar {
