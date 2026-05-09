@@ -63,8 +63,8 @@ async def event_generator():
         for event in current_orchestrator.graph.stream(current_initial_state, {"recursion_limit": 100}):
             # event is typically a dict mapping node_name -> state_updates
             for node_name, state_update in event.items():
-                if node_name == "router_node":
-                    continue # Skip pass-through
+                if node_name not in ["evaluator_node", "synthesizer_node"]:
+                    continue # Skip intermediate nodes and router to prevent 3x duplicates per turn
                 
                 # Format payload for frontend
                 sender = state_update.get("sender", "system")
