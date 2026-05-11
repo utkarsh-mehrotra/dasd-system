@@ -11,6 +11,31 @@ type Message = {
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
+function MessageCard({ m }: { m: Message }) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <div className={`message-card ${m.sender} ${collapsed ? 'collapsed' : ''}`}>
+      <div 
+        className="message-header" 
+        onClick={() => setCollapsed(!collapsed)} 
+        style={{ cursor: 'pointer', userSelect: 'none' }}
+        title="Click to collapse/expand"
+      >
+        <div className="sender-info">
+          <div className="sender-avatar">{m.sender.charAt(0).toUpperCase()}</div>
+          <span className="sender-name">{m.sender}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <span className="turn-badge">Turn {m.turn}</span>
+          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{collapsed ? '▼' : '▲'}</span>
+        </div>
+      </div>
+      {!collapsed && <div className="message-body">{m.message}</div>}
+    </div>
+  );
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState<"live" | "history">("live");
   
@@ -193,16 +218,7 @@ function App() {
               )}
               
               {messages.map((m, idx) => (
-                <div key={idx} className={`message-card ${m.sender}`}>
-                  <div className="message-header">
-                    <div className="sender-info">
-                      <div className="sender-avatar">{m.sender.charAt(0).toUpperCase()}</div>
-                      <span className="sender-name">{m.sender}</span>
-                    </div>
-                    <span className="turn-badge">Turn {m.turn}</span>
-                  </div>
-                  <div className="message-body">{m.message}</div>
-                </div>
+                <MessageCard key={idx} m={m} />
               ))}
             </div>
           </>

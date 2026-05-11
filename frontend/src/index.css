@@ -213,7 +213,7 @@ textarea:focus, select:focus {
 
 .arena-content {
   padding: 3rem;
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
@@ -233,8 +233,13 @@ textarea:focus, select:focus {
   border-radius: 8px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  transition: background 0.2s;
+  transition: all 0.2s;
   max-width: 85%;
+}
+
+.message-card.collapsed {
+  margin-bottom: 0.5rem;
+  padding: 1rem 1.5rem;
 }
 
 .message-card.analyst {
@@ -264,6 +269,10 @@ textarea:focus, select:focus {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+}
+
+.message-card.collapsed .message-header {
+  margin-bottom: 0;
 }
 
 .message-card.visionary .message-header {
@@ -309,10 +318,10 @@ textarea:focus, select:focus {
 }
 
 .message-body {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: #CCCCCC;
   white-space: pre-wrap;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
 /* Status Indicator */
