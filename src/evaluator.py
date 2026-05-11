@@ -1,38 +1,37 @@
 import numpy as np
-from langchain_huggingface import HuggingFaceEmbeddings
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 class Evaluator:
     def __init__(self):
-        # Using a fast, local embedding model
-        self.embeddings_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-        self.stagnation_threshold = 0.95  # High similarity means stagnation
-
-    def calculate_embedding(self, text: str) -> np.ndarray:
-        embedding = self.embeddings_model.embed_query(text)
-        return np.array(embedding)
-
-    def cosine_similarity(self, vec1: np.ndarray, vec2: np.ndarray) -> float:
-        dot_product = np.dot(vec1, vec2)
-        norm_a = np.linalg.norm(vec1)
-        norm_b = np.linalg.norm(vec2)
-        if norm_a == 0 or norm_b == 0:
-            return 0.0
-        return dot_product / (norm_a * norm_b)
+        # Replaced heavy PyTorch embeddings with lightweight TF-IDF to prevent 512MB Render RAM OOM
+        self.vectorizer = TfidfVectorizer(stop_words='english')
+        self.stagnation_threshold = 0.85  # Adjusted threshold for TF-IDF
 
     def is_stagnating(self, current_msg: str, previous_msgs: list[str]) -> bool:
         """
-        Calculates perplexity delta / embedding similarity to detect redundancy.
+        Calculates TF-IDF cosine similarity to detect redundancy.
         Returns True if the current message is too similar to previous messages.
         """
         if not previous_msgs:
             return False
             
-        current_emb = self.calculate_embedding(current_msg)
+        corpus = [current_msg] + previous_msgs[-2:]
         
-        for msg in previous_msgs[-2:]: # Compare with last 2 turns
-            prev_emb = self.calculate_embedding(msg)
-            sim = self.cosine_similarity(current_emb, prev_emb)
-            if sim > self.stagnation_threshold:
+        try:
+            tfidf_matrix = self.vectorizer.fit_transform(corpus)
+            
+            # tfidf_matrix[0] is current_msg, [1:] are the previous msgs
+            current_vec = tfidf_matrix[0:1]
+            prev_vecs = tfidf_matrix[1:]
+            
+            similarities = cosine_similarity(current_vec, prev_vecs)[0]
+            
+            if any(sim > self.stagnation_threshold for sim in similarities):
                 return True # Semantic Stagnation detected!
                 
+        except ValueError:
+            # Vocabulary empty (e.g. all stop words)
+            pass
+            
         return False

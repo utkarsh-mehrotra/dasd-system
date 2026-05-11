@@ -1,8 +1,7 @@
 langchain>=0.1.0
 langgraph>=0.0.20
 langchain-groq>=0.1.0
-langchain-huggingface>=0.0.3
-sentence-transformers>=2.7.0
+scikit-learn>=1.4.0
 numpy>=1.26.0
 python-dotenv>=1.0.1
 pydantic>=2.5.3
