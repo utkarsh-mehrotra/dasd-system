@@ -2,6 +2,7 @@ import os
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
+from tenacity import retry, wait_exponential, stop_after_attempt
 
 # Ensure API key is present
 # os.environ["OPENAI_API_KEY"] = "..." 
@@ -64,6 +65,7 @@ class Analyst:
         ])
         self.chain = self.prompt | self.llm
 
+    @retry(wait=wait_exponential(min=4, max=20), stop=stop_after_attempt(5))
     def invoke(self, state: dict):
         return self.chain.invoke(state).content
 
@@ -77,6 +79,7 @@ class Visionary:
         ])
         self.chain = self.prompt | self.llm
 
+    @retry(wait=wait_exponential(min=4, max=20), stop=stop_after_attempt(5))
     def invoke(self, state: dict):
         return self.chain.invoke(state).content
 
@@ -90,6 +93,7 @@ class FactChecker:
         ])
         self.chain = self.prompt | self.llm
 
+    @retry(wait=wait_exponential(min=4, max=20), stop=stop_after_attempt(5))
     def invoke(self, message: str):
         return self.chain.invoke({"latest_message": message}).content
 
@@ -103,5 +107,6 @@ class Synthesizer:
         ])
         self.chain = self.prompt | self.llm
 
+    @retry(wait=wait_exponential(min=4, max=20), stop=stop_after_attempt(5))
     def invoke(self, state: dict):
         return self.chain.invoke(state).content

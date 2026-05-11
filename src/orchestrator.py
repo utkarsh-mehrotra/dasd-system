@@ -82,13 +82,13 @@ class DASDOrchestrator:
     def analyst_node(self, state: AgentState):
         ctx = self.context_manager.get_context()
         response = self.analyst.invoke({"context": ctx, "latest_message": state["latest_message"], "global_goal": state["global_goal"]})
-        import time; time.sleep(2) # Throttle to prevent Groq 6k TPM limit
+        import time; time.sleep(5) # Throttle to proactively prevent Groq 6k TPM limit
         return {"latest_message": response, "sender": "analyst", "turn_count": state["turn_count"] + 1, "history": [response]}
 
     def visionary_node(self, state: AgentState):
         ctx = self.context_manager.get_context()
         response = self.visionary.invoke({"context": ctx, "latest_message": state["latest_message"], "global_goal": state["global_goal"]})
-        import time; time.sleep(2) # Throttle to prevent Groq 6k TPM limit
+        import time; time.sleep(5) # Throttle to proactively prevent Groq 6k TPM limit
         return {"latest_message": response, "sender": "visionary", "turn_count": state["turn_count"] + 1, "history": [response]}
         
     def fact_check_node(self, state: AgentState):
